@@ -1,0 +1,98 @@
+import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+public class ATM {
+    public static void main(String[] args){
+        Scanner sc = new Scanner(System.in);
+
+        Bank theBank = new Bank("Brac");
+        User aUser = theBank.addUser("Saadman", "Ahmed", "1234");
+        Account newAccount = new Account("Checking",aUser,theBank);
+        aUser.addAccount(newAccount);
+        //theBank.addAccount(newAcount);
+
+        User curUser;
+        while(true){
+            //stay in login prompt until successful login
+            curUser=ATM.userMainMenuPrompt(theBank,sc);
+
+            //stay in main menu until user quits
+            ATM.printUserMenu(curUser,sc);
+        }
+
+    }
+
+
+    public static User userMainMenuPrompt(Bank theBank, Scanner sc){
+        String userID;
+        String pin;
+        User validUser;
+
+//        prompt user for login until correct id and pass is provided
+        do{
+            System.out.printf("\n\nWelcome to %s\n\n", theBank.getName());
+            System.out.print("Enter your ID: ");
+            userID=sc.nextLine();
+            System.out.print("Enter your pin: ");
+            pin=sc.nextLine();
+
+//            try to get user object for provided id and pin
+            validUser = theBank.userLogin(userID,pin){
+                if(validUser==null){
+                  System.out.println("credentials error. "+"please enter right id or pin.");
+                }
+            }
+        }while(validUser==null); /*continue loop until successful login*/
+
+        return validUser;
+    }
+
+    public static void printUserMenu(User theUser, Scanner sc){
+        // print a summary of user accounts
+        theUser.printsAccountSummary();
+        int choice;
+        do{
+           System.out.printf("Welcome %s, what would you like to do",theUser.getFirstName());
+
+           System.out.println(" 1) show transaction history");
+           System.out.println(" 2) withdrawl");
+           System.out.println(" 3) deposit");
+           System.out.println(" 4) transfer");
+           System.out.println(" 5) quit");
+           System.out.println();
+           System.out.println("enter choide");
+           choice=sc.nextInt();
+
+           if(choice>5 || choice<1){
+               System.out.println("invalid choice.plese insert a number between 1 to 5");
+
+           }
+
+        }while(choice>5 || choice<1);
+
+        //process choice
+        switch(choice) {
+            case 1:
+                ATM.showTransactionHistory(theUser, sc);
+                break;
+            case 2:
+                ATM.withdrawl(theUser, sc);
+                break;
+            case 3:
+                ATM.deposit(theUser, sc);
+                break;
+            case 4:
+                ATM.transfer(theUser, sc);
+                break;
+        }
+        //redisplay menu until user quits
+        if(choice !=5){
+            ATM.printUserMenu(theUser,sc);
+        }
+
+    }
+
+
+
+
+}
